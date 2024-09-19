@@ -1,27 +1,60 @@
-function notasDeMaterias(){
-    let materia= prompt("nombre de la materia")
-    let cantidadnotas= parseInt(prompt("cantidad de notas que tiene"))
-    return  { materia, cantidadnotas };
-}
-function calcularpromedio(numero1, numero2){
-    return numero1 / numero2;
-}
-
-const opcion= parseInt(prompt("cantidad de materias que desea calcular el promedio"))
-for(let i = 0; i < opcion ; i++) {
-    const { materia, cantidadnotas } = notasDeMaterias()
-    let sumaNotas= 0
-    for (let j = 0 ; j < cantidadnotas ; j++){
-        let j = parseInt(prompt("ingrese la nota"))
-        sumaNotas += j
+class Persona {
+    constructor(nombre) {
+        this.nombre = nombre
+        this.notas = []
+        this.notaFinal = 0
     }
-    let promedio= calcularpromedio(sumaNotas,cantidadnotas)
-    let aprobadoDesaprobado
-        if (promedio < 6){
-            aprobadoDesaprobado= "No aprobado"
+
+    agregarNotas(notas) {
+        this.notas = notas
+        this.calcularNotaFinal()
+    }
+
+    calcularNotaFinal() {
+        const sumaNotas = this.notas.reduce((acc, nota) => acc + nota, 0)
+        if (this.notas.length > 0) {
+            this.notaFinal = sumaNotas / this.notas.length
+        } else {
+            this.notaFinal = 0
+        }
+    }
+
+    obtenerResultado() {
+        if(this.notaFinal < 6){
+            return "no aprobado"
         }
         else {
-            aprobadoDesaprobado= "aprobado"
-        }
-    console.log("su promedio en" + " " + materia + " " + "es" + " " + promedio + " " + "esta" + " " + aprobadoDesaprobado)
+            return "aprobado"
+    }}
 }
+
+function notasDeMaterias() {
+    const materia = prompt("Ingrese el nombre de la materia:");
+    const cantidadNotas = parseInt(prompt("Cantidad de notas que tiene:"))
+    return { materia, cantidadNotas }
+}
+
+function obtenerNotas(cantidadNotas) {
+    const notas = []
+    for (let i = 0; i < cantidadNotas; i++) {
+        let nota = parseInt(prompt("Ingrese la nota:"))
+        notas.push(nota)
+    }
+    return notas
+}
+
+function calcularPromediosAlumnos() {
+    const cantidadAlumnos = parseInt(prompt("¿Cuántos alumnos quiere calcular?"))
+    for (let i = 0; i < cantidadAlumnos; i++) {
+        const { materia, cantidadNotas } = notasDeMaterias()
+        const notas = obtenerNotas(cantidadNotas)
+        
+        const nombre = prompt("Ingrese el nombre del estudiante:")
+        const alumno = new Persona(nombre)
+        alumno.agregarNotas(notas)
+
+        console.log("Su promedio en " + materia + " es " + alumno.notaFinal + " de " + nombre +". Esta " + alumno.obtenerResultado())
+    }
+}
+
+calcularPromediosAlumnos()
