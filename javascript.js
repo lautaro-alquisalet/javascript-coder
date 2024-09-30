@@ -27,34 +27,92 @@ class Persona {
             return "aprobado"
     }}
 }
+document.getElementById('calcularboton').addEventListener('click', () => {
+    const nombre = document.getElementById('nombre').value.trim()
+    const materia = document.getElementById('materia').value.trim()
+    const notasInput = document.getElementById('notas').value
 
-function notasDeMaterias() {
-    const materia = prompt("Ingrese el nombre de la materia:");
-    const cantidadNotas = parseInt(prompt("Cantidad de notas que tiene:"))
-    return { materia, cantidadNotas }
-}
-
-function obtenerNotas(cantidadNotas) {
-    const notas = []
-    for (let i = 0; i < cantidadNotas; i++) {
-        let nota = parseInt(prompt("Ingrese la nota:"))
-        notas.push(nota)
+    if (!nombre || !materia || !notasInput) {
+    let resultadoDiv = document.getElementById("resultado")
+    resultadoDiv.innerHTML="Por favor, complete todos los campos correctamente."
+    return
     }
-    return notas
-}
 
-function calcularPromediosAlumnos() {
-    const cantidadAlumnos = parseInt(prompt("¿Cuántos alumnos quiere calcular?"))
-    for (let i = 0; i < cantidadAlumnos; i++) {
-        const { materia, cantidadNotas } = notasDeMaterias()
-        const notas = obtenerNotas(cantidadNotas)
-        
-        const nombre = prompt("Ingrese el nombre del estudiante:")
-        const alumno = new Persona(nombre)
-        alumno.agregarNotas(notas)
+    const notas = notasInput.split(',').map(nota => {
+        const trimmedNota = parseFloat(nota.trim())
+        return !isNaN(trimmedNota) && trimmedNota >= 0 && trimmedNota <= 10 ? trimmedNota : null
+    }).filter(nota => nota !== null)
 
-        console.log("Su promedio en " + materia + " es " + alumno.notaFinal + " de " + nombre +". Esta " + alumno.obtenerResultado())
+    if (notas.length === 0) {
+        alert("Ingrese al menos una nota válida entre 0 y 10.")
+        return
     }
+
+    const alumno = new Persona(nombre)
+    alumno.agregarNotas(notas)
+    mostrarResultado(alumno, materia)
+    almacenarDatosEnLocalStorage(alumno, materia)
+})
+
+function mostrarMensaje(mensaje) {
+    const resultadoDiv = document.getElementById('resultado')
+    resultadoDiv.innerHTML = `<span>${mensaje}</span>`
 }
 
-calcularPromediosAlumnos()
+function almacenarDatosEnLocalStorage(alumno, materia) {
+    const datosExistentes = JSON.parse(localStorage.getItem('datosEstudiantes')) || []
+    const nuevoRegistro = {
+        nombre: alumno.nombre,
+        materia: materia,
+        notas: alumno.notas,
+        promedio: alumno.notaFinal,
+        estado: alumno.obtenerResultado()
+    };
+    
+    datosExistentes.push(nuevoRegistro)
+    localStorage.setItem('datosEstudiantes', JSON.stringify(datosExistentes))
+    console.log("Datos almacenados en localStorage:", datosExistentes)
+}
+
+document.getElementById('cargarJsonboton').addEventListener('click', () => {
+    const datosJSON = localStorage.getItem('datosEstudiantes')
+    if (datosJSON) {
+        mostrarListaEstudiantes(JSON.parse(datosJSON))
+    } else {
+        mostrarMensaje("No hay datos almacenados.")
+    }
+})
+
+function mostrarListaEstudiantes(datos) {
+    const resultadoDiv = document.getElementById('resultado')
+    resultadoDiv.innerHTML = ''; 
+
+    const lista = document.createElement('ul')
+    
+    datos.forEach(data => {
+        const li = document.createElement('li')
+        li.innerHTML = `${data.nombre} - ${data.materia}: Promedio <strong>${data.promedio.toFixed(2)}</strong>, Estado: <strong>${data.estado}</strong>`
+        lista.appendChild(li)
+    })
+    
+    resultadoDiv.appendChild(lista)
+}
+
+function mostrarResultado(alumno, materia) {
+    const resultadoDiv = document.getElementById('resultado')
+    resultadoDiv.innerHTML = `
+        Su promedio en <strong>${materia}</strong> es <strong>${alumno.notaFinal.toFixed(2)}</strong> de <strong>${alumno.nombre}</strong>. Esta <strong>${alumno.obtenerResultado()}</strong>.
+    `
+}
+
+window.onload = () => {
+    const datosJSON = localStorage.getItem('datosEstudiantes')
+    if (datosJSON) {
+        const datos = JSON.parse(datosJSON)
+        datos.forEach(data => {
+            const alumno = new Persona(data.nombre)
+            alumno.agregarNotas(data.notas)
+            mostrarResultado(alumno, data.materia)
+        })
+    }
+};

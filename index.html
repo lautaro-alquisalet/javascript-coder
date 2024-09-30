@@ -6,8 +6,24 @@
     <title>Document</title>
 </head>
 <body>
-    <h1> hola </h1>
-
+    <h1>Simulador de Promedios de Alumnos</h1>
+    <div>
+        <label for="nombre">Nombre del estudiante:</label>
+        <input type="text" id="nombre" required>
+    </div>
+    <div>
+        <label for="materia">Materia:</label>
+        <input type="text" id="materia" required>
+    </div>
+    <div>
+        <label for="notas">Ingrese las notas (separadas por comas):</label>
+        <input type="text" id="notas" placeholder="Ej: 8, 9, 7" required>
+    </div>
+    <button id="calcularboton">Calcular Promedio</button>
+    <button id="cargarJsonboton">Cargar desde JSON</button>
+    <div class="resultado" id="resultado"></div>
+    
+    
     <script src="javascript.js"></script>
 </body>
 </html>
