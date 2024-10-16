@@ -1,0 +1,31 @@
+[
+    {
+        "nombre": "Juan",
+        "materia": "Matematicas",
+        "notas": [7, 8, 9],
+        "promedio": 8,
+        "estado": "aprobado"
+    },
+    {
+        "nombre": "Lucia",
+        "materia": "Historia",
+        "notas": [5, 6, 4],
+        "promedio": 5,
+        "estado": "no aprobado"
+    },
+
+    {
+        "nombre": "Lautaro",
+        "materia": "Quimica",
+        "notas": [5, 7, 6],
+        "promedio": 6,
+        "estado": "aprobado"
+    },
+    {
+        "nombre": "Ana",
+        "materia": "Biologia",
+        "notas": [4, 3, 5],
+        "promedio": 4,
+        "estado": "no aprobado"
+    }
+]

@@ -34,7 +34,12 @@ document.getElementById('calcularboton').addEventListener('click', () => {
 
     if (!nombre || !materia || !notasInput) {
     let resultadoDiv = document.getElementById("resultado")
-    resultadoDiv.innerHTML="Por favor, complete todos los campos correctamente."
+    Swal.fire({
+        title: 'Error!',
+        text: 'Introduzca los datos correctamente',
+        icon: 'error',
+        confirmButtonText: 'Continuar'
+    })
     return
     }
 
@@ -43,10 +48,6 @@ document.getElementById('calcularboton').addEventListener('click', () => {
         return !isNaN(trimmedNota) && trimmedNota >= 0 && trimmedNota <= 10 ? trimmedNota : null
     }).filter(nota => nota !== null)
 
-    if (notas.length === 0) {
-        alert("Ingrese al menos una nota válida entre 0 y 10.")
-        return
-    }
 
     const alumno = new Persona(nombre)
     alumno.agregarNotas(notas)
@@ -79,13 +80,13 @@ document.getElementById('cargarJsonboton').addEventListener('click', () => {
     if (datosJSON) {
         mostrarListaEstudiantes(JSON.parse(datosJSON))
     } else {
-        mostrarMensaje("No hay datos almacenados.")
+        mostrarMensaje("No hay datos almacenados")
     }
 })
 
 function mostrarListaEstudiantes(datos) {
     const resultadoDiv = document.getElementById('resultado')
-    resultadoDiv.innerHTML = ''; 
+    resultadoDiv.innerHTML = ''
 
     const lista = document.createElement('ul')
     
@@ -100,10 +101,41 @@ function mostrarListaEstudiantes(datos) {
 
 function mostrarResultado(alumno, materia) {
     const resultadoDiv = document.getElementById('resultado')
+    Toastify({
+        text: "se aplico correctamente",
+        duration: 1000,
+        close: true,
+        gravity: "top", 
+        position: "right", 
+        stopOnFocus: true, 
+        style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
+    }).showToast();
     resultadoDiv.innerHTML = `
         Su promedio en <strong>${materia}</strong> es <strong>${alumno.notaFinal.toFixed(2)}</strong> de <strong>${alumno.nombre}</strong>. Esta <strong>${alumno.obtenerResultado()}</strong>.
     `
 }
+document.getElementById('cargarDatosExternos').addEventListener('click', () => {
+    obtenerDatosExternos();
+})
+function obtenerDatosExternos() {
+    fetch('/promedios.json')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la red')
+        }
+        return response.json()
+    })
+    .then(json => {
+        mostrarListaEstudiantes(json)
+    })
+    .catch(error => {
+        console.error('Hubo un problema con la solicitud Fetch:', error)
+        mostrarMensaje('Error al cargar los datos externos.')
+    })
+}
+
 
 window.onload = () => {
     const datosJSON = localStorage.getItem('datosEstudiantes')
@@ -115,4 +147,5 @@ window.onload = () => {
             mostrarResultado(alumno, data.materia)
         })
     }
-};
+    obtenerDatosExternos()
+}
